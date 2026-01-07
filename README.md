@@ -102,6 +102,7 @@ RS_Ratio = ((RS - SMA_RS) / StdDev_RS) + 100
 
 **Enhanced Implementation:**
 
+```latex
 ROC_t
 =
 \frac{
@@ -111,7 +112,9 @@ RS\text{-}Ratio_{t-k}
 }{
 RS\text{-}Ratio_{t-k}
 }
+```
 
+```latex
 k = 10
 
 EMA\_ROC(t)
@@ -129,7 +132,7 @@ RS\text{-}Momentum_t
 100 \times EMA\_ROC(t)
 
 k = 10, \quad m = 14
-
+```
 
 ```
 ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
