@@ -1812,8 +1812,8 @@ def main():
             else:
                 st.info("No ETFs selected")
     
-    # Tabs for Data Table and About
-    tab1, tab2 = st.tabs(["📋 Current RRG Values", "ℹ️ About RRG Charts"])
+    # Tabs for Data Table, RRG Computation, and About
+    tab1, tab2, tab3 = st.tabs(["📋 Current RRG Values", "🔢 RRG Computation", "ℹ️ About RRG Charts"])
     
     with tab1:
         if 'current_items_data' in st.session_state and 'current_calculator' in st.session_state:
@@ -1849,6 +1849,161 @@ def main():
             st.info("No data available. Select items to generate RRG chart.")
     
     with tab2:
+        st.markdown("## RRG Computation Methods")
+        st.markdown("This section explains how RS_Ratio and RS_Momentum are calculated using both the Enhanced Implementation and Standard JdK methodology.")
+        
+        st.markdown("---")
+        
+        # RS-Ratio Section
+        st.markdown("### RS-Ratio Calculation")
+        
+        st.markdown("#### Enhanced Implementation (EMA-Based Ratio Normalization)")
+        st.markdown("""
+        **Step 1: Calculate Relative Strength**
+        ```
+        RS = Stock_Close / Benchmark_Close
+        ```
+        
+        **Step 2: Calculate Exponential Moving Average**
+        ```
+        EMA_RS(t) = α × RS(t) + (1-α) × EMA_RS(t-1)
+        where α = 2/(m+1), m = 14 (default)
+        ```
+        
+        **Step 3: Calculate RS-Ratio**
+        ```
+        RS_Ratio = 100 × (EMA_RS / Rolling_Mean(EMA_RS, m))
+        ```
+        """)
+        
+        st.markdown("**Key Advantages:**")
+        st.markdown("- ✅ **EMA weighting**: Recent data gets exponentially more weight → faster trend detection")
+        st.markdown("- ✅ **Ratio normalization**: Direct interpretation (105 = 5% above recent average)")
+        st.markdown("- ✅ **Reduced lag**: Responds 2-3 periods earlier than SMA-based methods")
+        
+        st.markdown("---")
+        
+        st.markdown("#### Standard JdK Implementation (Z-Score Normalization)")
+        st.markdown("""
+        **Step 1: Calculate Relative Strength**
+        ```
+        RS = (Stock_Close / Benchmark_Close) × 100
+        ```
+        
+        **Step 2: Calculate Simple Moving Average and Standard Deviation**
+        ```
+        SMA_RS = Mean(RS, window=14)
+        StdDev_RS = StdDev(RS, window=14)
+        ```
+        
+        **Step 3: Calculate RS-Ratio using Z-Score**
+        ```
+        RS_Ratio = ((RS - SMA_RS) / StdDev_RS) × 10 + 100
+        ```
+        """)
+        
+        st.markdown("**Limitation:**")
+        st.markdown("- ⚠️ Z-score normalization requires statistical interpretation and is more sensitive to volatility spikes")
+        
+        st.markdown("---")
+        
+        # RS-Momentum Section
+        st.markdown("### RS-Momentum Calculation")
+        
+        st.markdown("#### Enhanced Implementation (EMA-Based Percentage Scaling)")
+        st.markdown("""
+        **Step 1: Calculate Rate of Change**
+        ```
+        ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
+        where k = 10 (default, short-term momentum)
+        ```
+        
+        **Step 2: Calculate Exponential Moving Average of ROC**
+        ```
+        EMA_ROC(t) = α × ROC(t) + (1-α) × EMA_ROC(t-1)
+        where α = 2/(m+1), m = 14
+        ```
+        
+        **Step 3: Calculate RS-Momentum**
+        ```
+        RS_Momentum = 100 + 100 × EMA_ROC
+        ```
+        """)
+        
+        st.markdown("**Key Advantages:**")
+        st.markdown("- ✅ **Direct percentage**: Momentum of 102 = 2% positive momentum (no conversion needed)")
+        st.markdown("- ✅ **Short lookback (k=10)**: Captures recent momentum relevant for current swing trade")
+        st.markdown("- ✅ **Faster signals**: EMA smoothing detects acceleration/deceleration earlier")
+        
+        st.markdown("---")
+        
+        st.markdown("#### Standard JdK Implementation (Z-Score Normalization)")
+        st.markdown("""
+        **Step 1: Calculate Rate of Change**
+        ```
+        ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
+        where period = 52 weeks (long-term, includes outdated data)
+        ```
+        
+        **Step 2: Calculate Simple Moving Average and Standard Deviation**
+        ```
+        SMA_ROC = Mean(ROC, window=14)
+        StdDev_ROC = StdDev(ROC, window=14)
+        ```
+        
+        **Step 3: Calculate RS-Momentum using Z-Score**
+        ```
+        RS_Momentum = ((ROC - SMA_ROC) / StdDev_ROC) × 10 + 100
+        ```
+        """)
+        
+        st.markdown("**Limitation:**")
+        st.markdown("- ⚠️ Z-score bounds values by historical volatility")
+        
+        st.markdown("---")
+        
+        # Comparison Table
+        st.markdown("### Comparison: Enhanced vs Standard")
+        
+        comparison_data = {
+            "Feature": ["Signal Speed", "Interpretation", "Momentum Period", "Volatility Sensitivity"],
+            "Enhanced": ["2-3 periods faster", "Direct percentage", "10 periods (relevant)", "Stable ratio-based"],
+            "Standard JdK": ["Delayed", "Statistical units", "52 weeks (outdated)", "Z-score volatility-dependent"],
+            "Trading Impact": ["Earlier entry/exit", "Faster decisions", "Current market focus", "Fewer false signals"]
+        }
+        
+        st.dataframe(pd.DataFrame(comparison_data), use_container_width=True, hide_index=True)
+        
+        st.markdown("---")
+        
+        # Parameters Section
+        st.markdown("### Key Parameters")
+        
+        st.markdown("**Enhanced Implementation:**")
+        param_enhanced = {
+            "Parameter": ["EMA Span (m)", "ROC Shift Period (k)"],
+            "Symbol": ["m", "k"],
+            "Default": ["14", "10"],
+            "Description": [
+                "Span for EMA of RS and EMA of ROC, and rolling window for RS_Ratio",
+                "Shift period for ROC calculation (short-term momentum)"
+            ]
+        }
+        st.dataframe(pd.DataFrame(param_enhanced), use_container_width=True, hide_index=True)
+        
+        st.markdown("**Standard JdK:**")
+        param_standard = {
+            "Parameter": ["Window", "Period"],
+            "Default (Weekly)": ["14", "52"],
+            "Default (Daily)": ["14", "20-26"],
+            "Description": [
+                "Period for SMA and StdDev calculation",
+                "Period for ROC calculation (weeks/days)"
+            ]
+        }
+        st.dataframe(pd.DataFrame(param_standard), use_container_width=True, hide_index=True)
+    
+    with tab3:
         st.markdown("""
         ## About RRG Charts
         
