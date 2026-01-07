@@ -33,27 +33,7 @@ Our implementation uses **EMA-based ratio normalization**, a significant improve
 
 **Enhanced Implementation:**
 
-RS_t = \frac{P_{\text{asset},t}}{P_{\text{benchmark},t}}
-
-EMA\_RS(t)
-=
-\alpha \cdot RS_t
-+
-(1 - \alpha) \cdot EMA\_RS(t-1)
-
-\alpha = \frac{2}{m+1}, \quad m = 14
-
-RS\text{-}Ratio_t
-=
-100 \times
-\frac{
-EMA\_RS(t)
-}{
-SMA_m\!\left(EMA\_RS(t)\right)
-}
-
-m = 14 \quad \text{(weekly default)}
-
+![RS Ratio](imgs/rs_enhanced.png)
 
 ```
 RS = Stock_Close / Benchmark_Close
@@ -71,20 +51,7 @@ RS_Ratio = 100 × (EMA_RS / Rolling_Mean(EMA_RS, m))
 
 **Standard JdK (for comparison):**
 
-RS_t = \frac{P_{\text{asset},t}}{P_{\text{benchmark},t}}
-
-RS\text{-}Ratio_t
-=
-100
-+
-10 \times
-\frac{
-EMA_n(RS_t)
--
-SMA_n\!\left(EMA_n(RS_t)\right)
-}{
-\sigma_n\!\left(EMA_n(RS_t)\right)
-}
+![RS Ratio](imgs/rs_standard.png)
 
 
 ```
@@ -102,37 +69,7 @@ RS_Ratio = ((RS - SMA_RS) / StdDev_RS) + 100
 
 **Enhanced Implementation:**
 
-```latex
-ROC_t
-=
-\frac{
-RS\text{-}Ratio_t
--
-RS\text{-}Ratio_{t-k}
-}{
-RS\text{-}Ratio_{t-k}
-}
-```
-
-```latex
-k = 10
-
-EMA\_ROC(t)
-=
-\alpha \cdot ROC_t
-+
-(1 - \alpha) \cdot EMA\_ROC(t-1)
-
-\alpha = \frac{2}{m+1}, \quad m = 14
-
-RS\text{-}Momentum_t
-=
-100
-+
-100 \times EMA\_ROC(t)
-
-k = 10, \quad m = 14
-```
+![RS Momentum](imgs/mom_enhanced.png)
 
 ```
 ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
@@ -151,30 +88,7 @@ RS_Momentum = 100 + 100 × EMA_ROC
 
 **Standard JdK (for comparison):**
 
-ROC_t
-=
-\frac{
-EMA_n(RS_t)
--
-EMA_n(RS_{t-k})
-}{
-EMA_n(RS_{t-k})
-}
-
-RS\text{-}Momentum_t
-=
-100
-+
-10 \times
-\frac{
-EMA_m(ROC_t)
--
-SMA_m\!\left(EMA_m(ROC_t)\right)
-}{
-\sigma_m\!\left(EMA_m(ROC_t)\right)
-}
-
-n = 14,\quad k = 10,\quad m = 10
+![RS Momentum](imgs/mom_standard.png)
 
 ```
 ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
