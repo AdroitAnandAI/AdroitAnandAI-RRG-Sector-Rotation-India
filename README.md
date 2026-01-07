@@ -1,4 +1,4 @@
-# RRG Chart Visualization: Enhanced Sector Rotation Analysis
+# RRG Chart Visualization: Sector Rotation Analysis
 
 A well-designed Relative Rotation Graph (RRG) visualization platform for sector rotation strategies and swing trading in the Indian equity market. This implementation uses EMA-based ratio normalization—an enhancement to the standard JdK methodology—providing earlier signal detection, intuitive interpretation, and smoother transitions, enabling early and informed investment and swing trading decisions.
 
@@ -33,7 +33,12 @@ Our implementation uses **EMA-based ratio normalization**, a significant improve
 
 **Enhanced Implementation:**
 
-![RS Ratio](imgs/rs_enhanced.png)
+<!-- ![RS Ratio](imgs/rs_enhanced.png) -->
+
+<p align="center">
+  <img src="imgs/rs_enhanced.png" width="50%">
+</p>
+
 
 ```
 RS = Stock_Close / Benchmark_Close
@@ -51,7 +56,11 @@ RS_Ratio = 100 × (EMA_RS / Rolling_Mean(EMA_RS, m))
 
 **Standard JdK (for comparison):**
 
-![RS Ratio](imgs/rs_standard.png)
+<!-- ![RS Ratio](imgs/rs_standard.png) -->
+
+<p align="center">
+  <img src="imgs/rs_standard.png" width="50%">
+</p>
 
 
 ```
@@ -60,7 +69,7 @@ RS = (Stock_Close / Benchmark_Close) × 100
 SMA_RS = Mean(RS, window=14)
 StdDev_RS = StdDev(RS, window=14)
 
-RS_Ratio = ((RS - SMA_RS) / StdDev_RS) + 100
+RS_Ratio = ((RS - SMA_RS) / StdDev_RS) * 10 + 100
 ```
 
 **Limitation**: Z-score normalization requires statistical interpretation and is more sensitive to volatility spikes.
@@ -69,7 +78,11 @@ RS_Ratio = ((RS - SMA_RS) / StdDev_RS) + 100
 
 **Enhanced Implementation:**
 
-![RS Momentum](imgs/mom_enhanced.png)
+<!-- ![RS Momentum](imgs/mom_enhanced.png) -->
+
+<p align="center">
+  <img src="imgs/mom_enhanced.png" width="50%">
+</p>
 
 ```
 ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
@@ -88,7 +101,11 @@ RS_Momentum = 100 + 100 × EMA_ROC
 
 **Standard JdK (for comparison):**
 
-![RS Momentum](imgs/mom_standard.png)
+<!-- ![RS Momentum](imgs/mom_standard.png) -->
+
+<p align="center">
+  <img src="imgs/mom_standard.png" width="50%">
+</p>
 
 ```
 ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
@@ -97,7 +114,7 @@ ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
 SMA_ROC = Mean(ROC, window=14)
 StdDev_ROC = StdDev(ROC, window=14)
 
-RS_Momentum = ((ROC - SMA_ROC) / StdDev_ROC) + 100
+RS_Momentum = ((ROC - SMA_ROC) / StdDev_ROC) * 10 + 100
 ```
 
 **Limitation**: 52-week lookback includes irrelevant historical data; z-score bounds values by historical volatility.
