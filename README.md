@@ -6,7 +6,7 @@ A well-designed Relative Rotation Graph (RRG) visualization platform for sector 
 
 ## Why RRG Charts Matter
 
-**Relative Rotation Graphs** solve a critical problem in portfolio management: **identifying which sectors/stocks are rotating into and out of favor** before the crowd recognizes the shift. Traditional analysis shows absolute performance, but RRG reveals **relative strength and momentum** - the two dimensions that drive sector rotation cycles.
+**Relative Rotation Graphs identifies which sectors/stocks are rotating into and out of favor** before the crowd recognizes the shift. Traditional analysis shows absolute performance, but RRG reveals **relative strength and momentum** - the two dimensions that drive sector rotation cycles.
 
 ### The Power of Two Dimensions
 
@@ -14,7 +14,7 @@ RRG charts plot securities in a 2D space:
 - **X-axis (RS-Ratio)**: How strong is this security relative to the benchmark?
 - **Y-axis (RS-Momentum)**: Is the relative strength accelerating or decelerating?
 
-This dual-axis approach captures the **rotational dynamics** that drive market cycles. Sectors don't just move up or down - they **rotate** through predictable phases: Improving → Leading → Weakening → Lagging → Improving.
+This dual-axis approach captures the **rotational dynamics** that drive market cycles. Sectors don't just move up or down - they **rotate** through predictable phases:**Improving → Leading → Weakening → Lagging → Improving**.
 
 ### Why This Matters for Swing Trading
 
@@ -32,6 +32,29 @@ Our implementation uses **EMA-based ratio normalization**, a significant improve
 ### RS-Ratio Formula
 
 **Enhanced Implementation:**
+
+RS_t = \frac{P_{\text{asset},t}}{P_{\text{benchmark},t}}
+
+EMA\_RS(t)
+=
+\alpha \cdot RS_t
++
+(1 - \alpha) \cdot EMA\_RS(t-1)
+
+\alpha = \frac{2}{m+1}, \quad m = 14
+
+RS\text{-}Ratio_t
+=
+100 \times
+\frac{
+EMA\_RS(t)
+}{
+SMA_m\!\left(EMA\_RS(t)\right)
+}
+
+m = 14 \quad \text{(weekly default)}
+
+
 ```
 RS = Stock_Close / Benchmark_Close
 
@@ -47,6 +70,23 @@ RS_Ratio = 100 × (EMA_RS / Rolling_Mean(EMA_RS, m))
 - **Reduced lag**: Responds 2-3 periods earlier than SMA-based methods
 
 **Standard JdK (for comparison):**
+
+RS_t = \frac{P_{\text{asset},t}}{P_{\text{benchmark},t}}
+
+RS\text{-}Ratio_t
+=
+100
++
+10 \times
+\frac{
+EMA_n(RS_t)
+-
+SMA_n\!\left(EMA_n(RS_t)\right)
+}{
+\sigma_n\!\left(EMA_n(RS_t)\right)
+}
+
+
 ```
 RS = (Stock_Close / Benchmark_Close) × 100
 
@@ -61,6 +101,36 @@ RS_Ratio = ((RS - SMA_RS) / StdDev_RS) + 100
 ### RS-Momentum Formula
 
 **Enhanced Implementation:**
+
+ROC_t
+=
+\frac{
+RS\text{-}Ratio_t
+-
+RS\text{-}Ratio_{t-k}
+}{
+RS\text{-}Ratio_{t-k}
+}
+
+k = 10
+
+EMA\_ROC(t)
+=
+\alpha \cdot ROC_t
++
+(1 - \alpha) \cdot EMA\_ROC(t-1)
+
+\alpha = \frac{2}{m+1}, \quad m = 14
+
+RS\text{-}Momentum_t
+=
+100
++
+100 \times EMA\_ROC(t)
+
+k = 10, \quad m = 14
+
+
 ```
 ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
         where k = 10 (default, short-term momentum)
@@ -77,6 +147,32 @@ RS_Momentum = 100 + 100 × EMA_ROC
 - **Faster signals**: EMA smoothing detects acceleration/deceleration earlier
 
 **Standard JdK (for comparison):**
+
+ROC_t
+=
+\frac{
+EMA_n(RS_t)
+-
+EMA_n(RS_{t-k})
+}{
+EMA_n(RS_{t-k})
+}
+
+RS\text{-}Momentum_t
+=
+100
++
+10 \times
+\frac{
+EMA_m(ROC_t)
+-
+SMA_m\!\left(EMA_m(ROC_t)\right)
+}{
+\sigma_m\!\left(EMA_m(ROC_t)\right)
+}
+
+n = 14,\quad k = 10,\quad m = 10
+
 ```
 ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
         where period = 52 weeks (long-term, includes outdated data)
