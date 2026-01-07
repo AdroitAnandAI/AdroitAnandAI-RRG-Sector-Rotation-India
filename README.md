@@ -36,10 +36,10 @@ Our implementation uses **EMA-based ratio normalization**, a significant improve
 <!-- ![RS Ratio](imgs/rs_enhanced.png) -->
 
 <p align="center">
-  <img src="imgs/rs_enhanced.png" width="50%">
+  <img src="imgs/rs_enhanced.png" width="60%">
 </p>
 
-
+Formulas in Text:
 ```
 RS = Stock_Close / Benchmark_Close
 
@@ -59,10 +59,10 @@ RS_Ratio = 100 × (EMA_RS / Rolling_Mean(EMA_RS, m))
 <!-- ![RS Ratio](imgs/rs_standard.png) -->
 
 <p align="center">
-  <img src="imgs/rs_standard.png" width="50%">
+  <img src="imgs/rs_standard.png" width="60%">
 </p>
 
-
+Formulas in Text:
 ```
 RS = (Stock_Close / Benchmark_Close) × 100
 
@@ -81,9 +81,10 @@ RS_Ratio = ((RS - SMA_RS) / StdDev_RS) * 10 + 100
 <!-- ![RS Momentum](imgs/mom_enhanced.png) -->
 
 <p align="center">
-  <img src="imgs/mom_enhanced.png" width="50%">
+  <img src="imgs/mom_enhanced.png" width="60%">
 </p>
 
+Formulas in Text:
 ```
 ROC(t) = (RS_Ratio(t) - RS_Ratio(t-k)) / RS_Ratio(t-k)
         where k = 10 (default, short-term momentum)
@@ -104,9 +105,10 @@ RS_Momentum = 100 + 100 × EMA_ROC
 <!-- ![RS Momentum](imgs/mom_standard.png) -->
 
 <p align="center">
-  <img src="imgs/mom_standard.png" width="50%">
+  <img src="imgs/mom_standard.png" width="70%">
 </p>
 
+Formulas in Text:
 ```
 ROC(t) = ((RS_Ratio(t) / RS_Ratio(t-period)) - 1) × 100
         where period = 52 weeks (long-term, includes outdated data)
@@ -117,7 +119,7 @@ StdDev_ROC = StdDev(ROC, window=14)
 RS_Momentum = ((ROC - SMA_ROC) / StdDev_ROC) * 10 + 100
 ```
 
-**Limitation**: 52-week lookback includes irrelevant historical data; z-score bounds values by historical volatility.
+**Limitation**: z-score bounds values by historical volatility.
 
 ### Why These Enhancements Matter
 
