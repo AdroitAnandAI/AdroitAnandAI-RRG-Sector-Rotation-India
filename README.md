@@ -16,7 +16,7 @@ RRG charts plot securities in a 2D space:
 
 This dual-axis approach captures the **rotational dynamics** that drive market cycles. Sectors don't just move up or down - they **rotate** through predictable phases: Improving → Leading → Weakening → Lagging → Improving.
 
-### Why This Matters for Trading
+### Why This Matters for Swing Trading
 
 1. **Early Entry Signals**: Identify sectors moving from "Improving" to "Leading" before they become obvious
 2. **Exit Timing**: Recognize when "Leading" sectors transition to "Weakening" 
@@ -27,7 +27,7 @@ This dual-axis approach captures the **rotational dynamics** that drive market c
 
 ## Enhanced Formula Implementation
 
-Our implementation uses **EMA-based ratio normalization**, a significant improvement over the standard JdK z-score methodology. This enhancement provides **2-3 periods faster signal detection** and **direct percentage interpretation** - critical advantages for active trading.
+Our implementation uses **EMA-based ratio normalization**, a significant improvement over the standard JdK z-score methodology. This enhancement provides **2-3 periods faster signal detection** and **direct percentage interpretation** - critical advantages for swing trading.
 
 ### RS-Ratio Formula
 
@@ -73,7 +73,7 @@ RS_Momentum = 100 + 100 × EMA_ROC
 
 **Key Advantages:**
 - **Direct percentage**: Momentum of 102 = 2% positive momentum (no conversion needed)
-- **Short lookback (k=10)**: Captures recent momentum relevant for current trading
+- **Short lookback (k=10)**: Captures recent momentum relevant for current swing trade
 - **Faster signals**: EMA smoothing detects acceleration/deceleration earlier
 
 **Standard JdK (for comparison):**
@@ -190,207 +190,49 @@ The application opens at `http://localhost:8501`
 
 ### Quadrant Analysis
 
-RRG charts divide the space into four quadrants, each representing a distinct phase in the sector rotation cycle:
+| Quadrant | Condition | Action | Interpretation |
+|----------|-----------|--------|----------------|
+| 🟢 **Leading** (Top-Right) | RS > 100, Momentum > 100 | Hold/Add | Strong outperformance with accelerating momentum |
+| 🟡 **Weakening** (Bottom-Right) | RS > 100, Momentum ≤ 100 | Take Profits | Outperforming but momentum fading - early exit signal |
+| 🔴 **Lagging** (Bottom-Left) | RS ≤ 100, Momentum ≤ 100 | Avoid/Exit | Weak performance with negative momentum |
+| 🔵 **Improving** (Top-Left) | RS ≤ 100, Momentum > 100 | Early Entry | Weak but recovering - best risk/reward opportunity |
 
-#### 🟢 **Leading (Top-Right)**: RS > 100, Momentum > 100
-**Characteristics:**
-- Strong relative strength with positive momentum
-- Outperforming benchmark with accelerating performance
-- Typically in mid-to-late stage of uptrend
+**Rotation Cycle**: Improving → Leading → Weakening → Lagging → Improving
 
-**Trading Action:**
-- ✅ **Hold/Add**: Strong candidates for continued outperformance
-- ✅ **Momentum Play**: Ride the trend but watch for weakening signals
-- ⚠️ **Risk**: Monitor for transition to "Weakening" quadrant
+### Key Visual Elements
 
-**Example**: NIFTY IT in Q4 2023 showing RS_Ratio=105, Momentum=102 → Strong tech sector rotation
-
-#### 🟡 **Weakening (Bottom-Right)**: RS > 100, Momentum ≤ 100
-**Characteristics:**
-- Still outperforming but momentum is fading
-- Relative strength remains positive but decelerating
-- Early warning of potential peak
-
-**Trading Action:**
-- ⚠️ **Take Profits**: Consider reducing positions
-- ⚠️ **Trail Stops**: Protect gains while allowing for continuation
-- 🔄 **Watch**: May transition to "Lagging" or recover to "Leading"
-
-**Example**: NIFTY Bank showing RS_Ratio=103, Momentum=98 → Banking sector losing steam
-
-#### 🔴 **Lagging (Bottom-Left)**: RS ≤ 100, Momentum ≤ 100
-**Characteristics:**
-- Weak relative strength with negative momentum
-- Underperforming benchmark with decelerating performance
-- Typically in downtrend phase
-
-**Trading Action:**
-- ❌ **Avoid**: Poor risk/reward ratio
-- ❌ **Exit**: If holding, consider exiting positions
-- 🔍 **Monitor**: Watch for transition to "Improving" (potential bottom)
-
-**Example**: NIFTY Energy with RS_Ratio=97, Momentum=98 → Energy sector out of favor
-
-#### 🔵 **Improving (Top-Left)**: RS ≤ 100, Momentum > 100
-**Characteristics:**
-- Weak relative strength but positive momentum
-- Underperforming but showing signs of recovery
-- Early stage of potential turnaround
-
-**Trading Action:**
-- ✅ **Early Entry**: Best risk/reward opportunity
-- ✅ **Accumulate**: Build positions as momentum builds
-- 🔍 **Confirm**: Wait for transition to "Leading" for confirmation
-
-**Example**: NIFTY Pharma moving from RS_Ratio=98, Momentum=101 → Potential sector rotation into healthcare
-
-### Tail Trajectory Analysis
-
-The **tail** (historical trail) reveals rotational direction:
-
-- **Clockwise Rotation**: Normal rotation cycle (Improving → Leading → Weakening → Lagging)
-- **Counter-Clockwise**: Unusual rotation, may indicate reversal or anomaly
-- **Straight Movement**: Strong trend without rotation (rare, indicates persistent outperformance/underperformance)
-- **Tight Coiling**: Consolidation phase, preparing for next rotation
-
-### Animation Insights
-
-Enable animation to observe:
-- **Rotation Speed**: Fast rotations indicate volatile sector shifts
-- **Quadrant Duration**: How long sectors stay in each phase
-- **Rotation Patterns**: Identify cyclical sector behavior
-- **Leading Indicators**: Sectors entering "Improving" before others
+- **Tail Direction**: Clockwise = normal rotation; Counter-clockwise = reversal; Straight = persistent trend
+- **Animation**: Observe rotation speed, quadrant duration, and cyclical patterns
+- **Position**: Distance from center (100, 100) indicates strength of relative performance
 
 ---
 
-## Advanced Trading Strategies
+## Advanced Swing Trading Strategies
 
-### Strategy 1: Sector Rotation Momentum Play
+### Strategy 1: Momentum Rotation Play
+**Entry**: Improving quadrant (RS: 95-100, Momentum: 101-105, upward tail)  
+**Exit**: Weakening signal (Momentum < 100)  
+**Hold**: 6-12 weeks | **R:R**: 1:2 to 1:3
 
-**Concept**: Capture sectors as they rotate from "Improving" to "Leading"
+### Strategy 2: Defensive Exit
+**Signal**: Leading → Weakening transition (Momentum drops below 101)  
+**Action**: Exit 30% on first signal, 40% more if Momentum < 99, full exit on Lagging  
+**Benefit**: Protects gains, frees capital for new opportunities
 
-**Execution:**
-1. Monitor weekly RRG charts for sectors in "Improving" quadrant
-2. Identify sectors with:
-   - RS_Ratio: 95-100 (weak but not too weak)
-   - Momentum: 101-105 (positive and accelerating)
-   - Upward tail trajectory (moving toward "Leading")
-3. Enter when momentum crosses 102 and RS_Ratio > 98
-4. Hold until transition to "Weakening" (Momentum < 100)
-5. Exit 50% on "Weakening" signal, trail stop on remaining
+### Strategy 3: Contrarian Entry
+**Entry**: Lagging → Improving transition (Momentum crosses 100, RS: 95-100)  
+**Scaling**: 25% initial, 50% when RS crosses 100, 25% on Leading entry  
+**Stop**: Momentum drops below 100 | **Target**: 15-25% return
 
-**Example**: 
-- Week 1: NIFTY AUTO at RS=98, Momentum=101 (Improving)
-- Week 3: RS=100, Momentum=103 (transitioning to Leading)
-- Week 6: RS=104, Momentum=105 (Leading - full position)
-- Week 10: RS=105, Momentum=99 (Weakening - exit signal)
+### Strategy 4: Multi-Sector Portfolio
+**Allocation**: 40% Leading, 30% Improving, 20% Weakening (reducing), 10% Cash  
+**Rebalance**: Weekly rotation from Weakening → Improving, maintain 2-3 Leading sectors  
+**Target**: 12-18% annual returns with lower drawdowns
 
-**Expected Holding Period**: 6-12 weeks
-**Risk/Reward**: 1:2 to 1:3
-
----
-
-### Strategy 2: Defensive Rotation (Weakening Exit)
-
-**Concept**: Systematically exit weakening sectors before major decline
-
-**Execution:**
-1. Monitor existing positions in "Leading" quadrant
-2. Set alert when:
-   - Momentum drops below 101
-   - Tail starts curving downward
-   - RS_Ratio remains > 100 but momentum declining
-3. Exit 30% on first "Weakening" signal
-4. Exit additional 40% if momentum drops below 99
-5. Full exit if enters "Lagging" quadrant
-
-**Example**:
-- Current: NIFTY IT at RS=106, Momentum=101 (Leading but weakening)
-- Action: Reduce position by 30%
-- Week later: RS=105, Momentum=98 (Weakening confirmed)
-- Action: Exit remaining 70%
-
-**Benefit**: Protects gains before sector decline, frees capital for "Improving" sectors
-
----
-
-### Strategy 3: Contrarian Bottom Fishing (Improving Entry)
-
-**Concept**: Identify sectors at potential turning point in "Improving" quadrant
-
-**Execution:**
-1. Identify sectors in "Lagging" with momentum starting to turn positive
-2. Wait for transition to "Improving" quadrant:
-   - RS_Ratio: 95-100
-   - Momentum: 101-103 (recently crossed 100)
-   - Upward tail trajectory
-3. Enter small position (25% of target allocation)
-4. Add 50% more when RS_Ratio crosses 100
-5. Final 25% when enters "Leading" quadrant
-
-**Example**:
-- NIFTY Pharma: RS=96, Momentum=99 (Lagging, but momentum improving)
-- Week 2: RS=97, Momentum=101 (entered Improving)
-- Week 4: RS=99, Momentum=103 (building momentum)
-- Week 6: RS=101, Momentum=105 (entered Leading - full position)
-
-**Risk Management**: Stop loss if momentum drops back below 100
-**Expected Return**: 15-25% if successful rotation to Leading
-
----
-
-### Strategy 4: Multi-Sector Momentum Portfolio
-
-**Concept**: Maintain diversified portfolio across rotation phases
-
-**Portfolio Allocation:**
-- **40% Leading**: Core positions in strong sectors
-- **30% Improving**: Growth positions in emerging sectors  
-- **20% Weakening**: Reducing positions (trailing stops)
-- **10% Cash**: Reserve for new "Improving" opportunities
-
-**Rebalancing Rules:**
-1. Weekly review of all sector positions
-2. Rotate from "Weakening" to "Improving" sectors
-3. Maintain 2-3 sectors in "Leading" (diversification)
-4. Never hold "Lagging" sectors (systematic exit)
-
-**Example Portfolio (Weekly Review)**:
-```
-Leading (40%): NIFTY IT (20%), NIFTY Bank (20%)
-Improving (30%): NIFTY AUTO (15%), NIFTY Pharma (15%)
-Weakening (20%): NIFTY FMCG (10%), NIFTY Energy (10%) - reducing
-Cash (10%): Reserve for new opportunities
-```
-
-**Expected Performance**: 12-18% annual returns with lower drawdowns
-
----
-
-### Strategy 5: Cyclical Sector Timing
-
-**Concept**: Exploit predictable sector rotation cycles
-
-**Typical Rotation Cycle** (6-12 months):
-1. **Improving** (Months 1-2): Early accumulation
-2. **Leading** (Months 3-6): Momentum phase, hold
-3. **Weakening** (Months 7-9): Distribution phase, exit
-4. **Lagging** (Months 10-12): Avoid, wait for bottom
-
-**Execution:**
-1. Track historical rotation patterns for each sector
-2. Identify sectors approaching typical "Improving" phase
-3. Pre-position small allocations before rotation
-4. Scale in as rotation progresses
-5. Scale out as rotation completes
-
-**Example - IT Sector Cycle**:
-- Q1: Lagging → Improving (accumulate)
-- Q2-Q3: Improving → Leading (hold/add)
-- Q4: Leading → Weakening (reduce)
-- Next Q1: Weakening → Lagging (avoid)
-
-**Data Requirement**: 2+ years of historical RRG data to identify cycles
+### Strategy 5: Cyclical Timing
+**Cycle**: Improving (M1-2) → Leading (M3-6) → Weakening (M7-9) → Lagging (M10-12)  
+**Execution**: Pre-position before Improving phase, scale in/out with rotation  
+**Requirement**: 2+ years historical data to identify sector-specific cycles
 
 ---
 
@@ -511,4 +353,4 @@ This project is for educational and personal use. Ensure compliance with AngelOn
 
 ---
 
-**Built for traders who understand that markets rotate, not just move. Identify the rotation before it becomes obvious.**
+**Built for investors and swing traders who understand that markets rotate, not just move. Identify the rotation before it becomes obvious.**
